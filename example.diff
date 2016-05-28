@@ -1,6 +1,6 @@
---- test/fixtures/actual.js	2016-05-29 01:05:10.000000000 +0200
-+++ test/fixtures/expected.js	2016-05-29 01:09:23.000000000 +0200
-@@ -1,45 +1,35 @@
+--- test/fixtures/actual.js	2016-05-29 01:39:10.000000000 +0200
++++ test/fixtures/expected.js	2016-05-29 01:39:33.000000000 +0200
+@@ -1,18 +1,14 @@
 -
  // if (true)
 -if (true) {
@@ -17,16 +17,15 @@
  // if ("")
 -if ("") {
 -    foo;
-+{
-+    bar;
+-}
+ 
+ // if ("1" == true)
+ {
+@@ -19,27 +15,21 @@
+     foo;
  }
  
- // if ("foo" == true)
--if ("foo" == true) {
--    foo;
--}
 +
- 
  // if (false)
 -if (false) {
 -    foo;
@@ -54,23 +53,19 @@
      foo;
  }
  
-@@ -43,15 +33,11 @@
+@@ -43,11 +33,8 @@
      foo;
  }
  
 -
  // if ("") else
 -if ("") {
-+{
-     foo;
+-    foo;
 -} else {
--    bar;
++{
+     bar;
  }
  
--
- // if (foo) else
- if (foo) {
-     foo;
 @@ -55,40 +41,27 @@
  // if (foo) else
  if (foo) {
