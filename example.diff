@@ -1,0 +1,119 @@
+--- test/fixtures/actual.js	2016-05-29 01:05:10.000000000 +0200
++++ test/fixtures/expected.js	2016-05-29 01:09:23.000000000 +0200
+@@ -1,45 +1,35 @@
+-
+ // if (true)
+-if (true) {
++{
+     foo;
+ }
+ 
+ // if ("foo")
+-if ("foo") {
++{
+     foo;
+ }
+ 
+ // if ("")
+-if ("") {
+-    foo;
++{
++    bar;
+ }
+ 
+ // if ("foo" == true)
+-if ("foo" == true) {
+-    foo;
+-}
++
+ 
+ // if (false)
+-if (false) {
+-    foo;
+-}
++
+ 
+ // if (null)
+-if (null) {
+-    foo;
+-}
++
+ 
+ if (undefined) {
+     foo;
+ }
+ 
+ // if (!true)
+-if (!true) {
+-    foo;
+-}
+ 
+ // if (!false)
+-if (!false) {
++{
+     foo;
+ }
+ 
+@@ -43,15 +33,11 @@
+     foo;
+ }
+ 
+-
+ // if ("") else
+-if ("") {
++{
+     foo;
+-} else {
+-    bar;
+ }
+ 
+-
+ // if (foo) else
+ if (foo) {
+     foo;
+@@ -55,40 +41,27 @@
+ // if (foo) else
+ if (foo) {
+     foo;
+-} else {
+ }
+ 
+-
+ // if (foo) else
+-if (foo) {
+-} else {
++if (!foo) {
+     bar;
+ }
+ 
+ // if (false) else
+-if (false) {
+-    foo;
+-} else {
+-}
+ 
+ // if (false) else
+-if (false) {
+-} else {
++{
+     bar;
+ }
+ 
+ // if (false) elseif (true) else
+-if (false) {
+-    foo;
+-} else if (true) {
++{
+     bar;
+-} else {
+-    foobar;
+ }
+ 
+ // if (true) elseif (false)
+-if (true) {
++{
+     foo;
+-} else if (false) {
+-    bar;
+ }
++
