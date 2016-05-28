@@ -4,7 +4,6 @@ export default function ({ types: t }) {
       'BinaryExpression|UnaryExpression'(path) {
         let evaluated = path.evaluate();
         if (evaluated.confident) {
-          console.log(path.node, evaluated.value)
           path.replaceWith(t.valueToNode(evaluated.value));
         }
       },

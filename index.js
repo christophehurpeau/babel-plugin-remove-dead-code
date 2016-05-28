@@ -12,7 +12,6 @@ exports.default = function (_ref) {
       'BinaryExpression|UnaryExpression': function BinaryExpressionUnaryExpression(path) {
         var evaluated = path.evaluate();
         if (evaluated.confident) {
-          console.log(path.node, evaluated.value);
           path.replaceWith(t.valueToNode(evaluated.value));
         }
       },

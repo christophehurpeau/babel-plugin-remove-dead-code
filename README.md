@@ -23,7 +23,7 @@ babel --plugins babel-plugin-remove-dead-code script.js
 
 ### What it does
 
-See the tests
+[See the example](https://github.com/christophehurpeau/babel-plugin-remove-dead-code/blob/master/example.diff)
 
 ### Thanks
 
