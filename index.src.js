@@ -2,7 +2,7 @@ export default function ({ types: t }) {
   return {
     visitor: {
       'BinaryExpression|UnaryExpression'(path) {
-        let evaluated = path.evaluate();
+        const evaluated = path.evaluate();
         if (evaluated.confident) {
           path.replaceWith(t.valueToNode(evaluated.value));
         }
@@ -10,11 +10,11 @@ export default function ({ types: t }) {
 
       IfStatement: {
         exit(path) {
-          const node = path.node
-          var consequent = node.consequent;
-          var alternate  = node.alternate;
-          var test = node.test;
-
+          const node = path.node;
+          let consequent = node.consequent;
+          let alternate  = node.alternate;
+          const test = path.get('test');
+          const testTruthy = test.evaluateTruthy();
 
           // we can check if a test will be falsy 100% and if so we can inline the
           // alternate if there is one and completely remove the consequent
@@ -22,9 +22,8 @@ export default function ({ types: t }) {
           //   if ("") { bar; } else { foo; } -> { foo; }
           //   if ("") { bar; } ->
           //
-          if (t.isNullLiteral(test) || (
-              (t.isBooleanLiteral(test) || t.isNumericLiteral(test) || t.isStringLiteral(test)) && !test.value)) {
-            if (alternate && alternate.body.length) {
+          if (testTruthy === false) {
+            if (t.isBlockStatement(alternate) && alternate.body.length) {
               path.replaceWith(alternate);
             } else {
               path.remove();
@@ -38,7 +37,7 @@ export default function ({ types: t }) {
           //   if (true) { foo; } -> { foo; }
           //   if ("foo") { foo; } -> { foo; }
           //
-          if ((t.isBooleanLiteral(test) || t.isNumericLiteral(test) || t.isStringLiteral(test)) && test.value) {
+          if (testTruthy === true) {
             path.replaceWith(consequent);
             return;
           }
@@ -58,13 +57,24 @@ export default function ({ types: t }) {
           //   if (foo) {} else { bar; } -> if (!foo) { bar; }
           //
 
-          if (t.isBlockStatement(consequent) && !consequent.body.length && t.isBlockStatement(alternate) && alternate.body.length) {
+          if (alternate && t.isBlockStatement(consequent) && !consequent.body.length
+                   && t.isBlockStatement(alternate) && alternate.body.length) {
+            node.test = t.unaryExpression("!", node.test, true);
             node.consequent = node.alternate;
             node.alternate  = null;
-            node.test       = t.unaryExpression("!", test, true);
           }
         }
-      }
+      },
+
+      ConditionalExpression(path) {
+        const node = path.node;
+        const testTruthy = path.get('test').evaluateTruthy();
+        if (testTruthy === true) {
+          path.replaceWith(node.consequent);
+        } else if (testTruthy === false) {
+          path.replaceWith(node.alternate);
+        }
+      },
     }
   };
 }

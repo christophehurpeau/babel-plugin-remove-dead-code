@@ -15,7 +15,7 @@ if ("") {
 }
 
 // if ("1" == true)
-{
+if ("1" == true) {
     foo;
 }
 
@@ -59,7 +59,7 @@ if (foo) {
 }
 
 
-// if (foo) else
+// if (foo) {} else { bar; }
 if (foo) {
 } else {
     bar;
@@ -92,3 +92,9 @@ if (true) {
 } else if (false) {
     bar;
 }
+
+// true ? foo : bar;
+true ? foo : bar;
+
+// false ? foo : bar;
+false ? foo : bar;

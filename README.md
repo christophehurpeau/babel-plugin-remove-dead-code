@@ -15,9 +15,9 @@ babel --plugins babel-plugin-remove-dead-code script.js
 
 ```json
 {
-	"plugins": [
-		"remove-dead-code"
-	]
+  "plugins": [
+    "remove-dead-code"
+  ]
 }
 ```
 

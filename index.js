@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -22,7 +22,8 @@ exports.default = function (_ref) {
           var node = path.node;
           var consequent = node.consequent;
           var alternate = node.alternate;
-          var test = node.test;
+          var test = path.get('test');
+          var testTruthy = test.evaluateTruthy();
 
           // we can check if a test will be falsy 100% and if so we can inline the
           // alternate if there is one and completely remove the consequent
@@ -30,8 +31,8 @@ exports.default = function (_ref) {
           //   if ("") { bar; } else { foo; } -> { foo; }
           //   if ("") { bar; } ->
           //
-          if (t.isNullLiteral(test) || (t.isBooleanLiteral(test) || t.isNumericLiteral(test) || t.isStringLiteral(test)) && !test.value) {
-            if (alternate && alternate.body.length) {
+          if (testTruthy === false) {
+            if (t.isBlockStatement(alternate) && alternate.body.length) {
               path.replaceWith(alternate);
             } else {
               path.remove();
@@ -45,7 +46,7 @@ exports.default = function (_ref) {
           //   if (true) { foo; } -> { foo; }
           //   if ("foo") { foo; } -> { foo; }
           //
-          if ((t.isBooleanLiteral(test) || t.isNumericLiteral(test) || t.isStringLiteral(test)) && test.value) {
+          if (testTruthy === true) {
             path.replaceWith(consequent);
             return;
           }
@@ -65,11 +66,21 @@ exports.default = function (_ref) {
           //   if (foo) {} else { bar; } -> if (!foo) { bar; }
           //
 
-          if (t.isBlockStatement(consequent) && !consequent.body.length && t.isBlockStatement(alternate) && alternate.body.length) {
+          if (alternate && t.isBlockStatement(consequent) && !consequent.body.length && t.isBlockStatement(alternate) && alternate.body.length) {
+            node.test = t.unaryExpression("!", node.test, true);
             node.consequent = node.alternate;
             node.alternate = null;
-            node.test = t.unaryExpression("!", test, true);
           }
+        }
+      },
+
+      ConditionalExpression: function ConditionalExpression(path) {
+        var node = path.node;
+        var testTruthy = path.get('test').evaluateTruthy();
+        if (testTruthy === true) {
+          path.replaceWith(node.consequent);
+        } else if (testTruthy === false) {
+          path.replaceWith(node.alternate);
         }
       }
     }

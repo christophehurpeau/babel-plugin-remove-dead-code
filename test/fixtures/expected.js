@@ -43,7 +43,7 @@ if (foo) {
     foo;
 }
 
-// if (foo) else
+// if (foo) {} else { bar; }
 if (!foo) {
     bar;
 }
@@ -65,3 +65,9 @@ if (!foo) {
     foo;
 }
 
+
+// true ? foo : bar;
+foo;
+
+// false ? foo : bar;
+bar;
