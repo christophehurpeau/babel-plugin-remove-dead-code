@@ -28,7 +28,7 @@ tests.forEach(filename => {
             babelrc: false,
             presets: [],
             plugins: [
-                [pluginPath, { "GLOBAL_TEST": 'test', "GLOBAL_1": 1, 'GLOBAL_FALSE': false }],
+                [pluginPath],
             ],
         });
 
