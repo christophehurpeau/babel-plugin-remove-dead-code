@@ -1,13 +1,44 @@
 export default function ({ types: t }) {
+  function replacePathIfConfident(path) {
+    const evaluated = path.evaluate();
+    if (evaluated.confident) {
+      path.replaceWith(t.valueToNode(evaluated.value));
+      return true;
+    }
+  }
+
   return {
     visitor: {
       'BinaryExpression|UnaryExpression': {
         exit(path) {
-          const evaluated = path.evaluate();
-          if (evaluated.confident) {
-            path.replaceWith(t.valueToNode(evaluated.value));
-          }
+          replacePathIfConfident(path);
         }
+      },
+
+      ConditionalExpression: {
+        exit(path) {
+          const node = path.node;
+          const testTruthy = path.get('test').evaluateTruthy();
+          if (testTruthy === true) {
+            path.replaceWith(node.consequent);
+          } else if (testTruthy === false) {
+            path.replaceWith(node.alternate);
+          }
+        },
+      },
+
+      LogicalExpression: {
+        exit(path) {
+          if (replacePathIfConfident(path)) return;
+
+          const node = path.node;
+          if (node.operator !== '&&') return;
+
+          const leftEvaluated = path.get('left').evaluate();
+          if (leftEvaluated.confident && leftEvaluated.value) {
+            path.replaceWith(node.right);
+          }
+        },
       },
 
       IfStatement: {
@@ -67,18 +98,6 @@ export default function ({ types: t }) {
           }
         }
       },
-
-      ConditionalExpression: {
-        exit(path) {
-          const node = path.node;
-          const testTruthy = path.get('test').evaluateTruthy();
-          if (testTruthy === true) {
-            path.replaceWith(node.consequent);
-          } else if (testTruthy === false) {
-            path.replaceWith(node.alternate);
-          }
-        },
-      }
     }
   };
 }

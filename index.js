@@ -7,13 +7,44 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (_ref) {
   var t = _ref.types;
 
+  function replacePathIfConfident(path) {
+    var evaluated = path.evaluate();
+    if (evaluated.confident) {
+      path.replaceWith(t.valueToNode(evaluated.value));
+      return true;
+    }
+  }
+
   return {
     visitor: {
       'BinaryExpression|UnaryExpression': {
         exit: function exit(path) {
-          var evaluated = path.evaluate();
-          if (evaluated.confident) {
-            path.replaceWith(t.valueToNode(evaluated.value));
+          replacePathIfConfident(path);
+        }
+      },
+
+      ConditionalExpression: {
+        exit: function exit(path) {
+          var node = path.node;
+          var testTruthy = path.get('test').evaluateTruthy();
+          if (testTruthy === true) {
+            path.replaceWith(node.consequent);
+          } else if (testTruthy === false) {
+            path.replaceWith(node.alternate);
+          }
+        }
+      },
+
+      LogicalExpression: {
+        exit: function exit(path) {
+          if (replacePathIfConfident(path)) return;
+
+          var node = path.node;
+          if (node.operator !== '&&') return;
+
+          var leftEvaluated = path.get('left').evaluate();
+          if (leftEvaluated.confident && leftEvaluated.value) {
+            path.replaceWith(node.right);
           }
         }
       },
@@ -71,18 +102,6 @@ exports.default = function (_ref) {
             node.test = t.unaryExpression("!", node.test, true);
             node.consequent = node.alternate;
             node.alternate = null;
-          }
-        }
-      },
-
-      ConditionalExpression: {
-        exit: function exit(path) {
-          var node = path.node;
-          var testTruthy = path.get('test').evaluateTruthy();
-          if (testTruthy === true) {
-            path.replaceWith(node.consequent);
-          } else if (testTruthy === false) {
-            path.replaceWith(node.alternate);
           }
         }
       }
