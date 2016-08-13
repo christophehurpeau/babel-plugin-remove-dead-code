@@ -9,13 +9,14 @@ exports.default = function (_ref) {
 
   return {
     visitor: {
-      'BinaryExpression|UnaryExpression': function BinaryExpressionUnaryExpression(path) {
-        var evaluated = path.evaluate();
-        if (evaluated.confident) {
-          path.replaceWith(t.valueToNode(evaluated.value));
+      'BinaryExpression|UnaryExpression': {
+        exit: function exit(path) {
+          var evaluated = path.evaluate();
+          if (evaluated.confident) {
+            path.replaceWith(t.valueToNode(evaluated.value));
+          }
         }
       },
-
 
       IfStatement: {
         exit: function exit(path) {
@@ -74,13 +75,15 @@ exports.default = function (_ref) {
         }
       },
 
-      ConditionalExpression: function ConditionalExpression(path) {
-        var node = path.node;
-        var testTruthy = path.get('test').evaluateTruthy();
-        if (testTruthy === true) {
-          path.replaceWith(node.consequent);
-        } else if (testTruthy === false) {
-          path.replaceWith(node.alternate);
+      ConditionalExpression: {
+        exit: function exit(path) {
+          var node = path.node;
+          var testTruthy = path.get('test').evaluateTruthy();
+          if (testTruthy === true) {
+            path.replaceWith(node.consequent);
+          } else if (testTruthy === false) {
+            path.replaceWith(node.alternate);
+          }
         }
       }
     }

@@ -1,10 +1,12 @@
 export default function ({ types: t }) {
   return {
     visitor: {
-      'BinaryExpression|UnaryExpression'(path) {
-        const evaluated = path.evaluate();
-        if (evaluated.confident) {
-          path.replaceWith(t.valueToNode(evaluated.value));
+      'BinaryExpression|UnaryExpression': {
+        exit(path) {
+          const evaluated = path.evaluate();
+          if (evaluated.confident) {
+            path.replaceWith(t.valueToNode(evaluated.value));
+          }
         }
       },
 
@@ -66,15 +68,17 @@ export default function ({ types: t }) {
         }
       },
 
-      ConditionalExpression(path) {
-        const node = path.node;
-        const testTruthy = path.get('test').evaluateTruthy();
-        if (testTruthy === true) {
-          path.replaceWith(node.consequent);
-        } else if (testTruthy === false) {
-          path.replaceWith(node.alternate);
-        }
-      },
+      ConditionalExpression: {
+        exit(path) {
+          const node = path.node;
+          const testTruthy = path.get('test').evaluateTruthy();
+          if (testTruthy === true) {
+            path.replaceWith(node.consequent);
+          } else if (testTruthy === false) {
+            path.replaceWith(node.alternate);
+          }
+        },
+      }
     }
   };
 }
