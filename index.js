@@ -42,8 +42,8 @@ exports.default = function (_ref) {
           var node = path.node;
           if (node.operator !== '&&') return;
 
-          var leftEvaluated = path.get('left').evaluate();
-          if (leftEvaluated.confident && leftEvaluated.value) {
+          var leftTruthy = path.get('left').evaluateTruthy();
+          if (leftTruthy === true) {
             path.replaceWith(node.right);
           }
         }

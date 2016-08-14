@@ -34,8 +34,8 @@ export default function ({ types: t }) {
           const node = path.node;
           if (node.operator !== '&&') return;
 
-          const leftEvaluated = path.get('left').evaluate();
-          if (leftEvaluated.confident && leftEvaluated.value) {
+          const leftTruthy = path.get('left').evaluateTruthy();
+          if (leftTruthy === true) {
             path.replaceWith(node.right);
           }
         },
