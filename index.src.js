@@ -52,11 +52,12 @@ export default function ({ types: t }) {
           // we can check if a test will be falsy 100% and if so we can inline the
           // alternate if there is one and completely remove the consequent
           //
-          //   if ("") { bar; } else { foo; } -> { foo; }
-          //   if ("") { bar; } ->
+          //   if (false) { bar; } else { foo; } -> { foo; }
+          //   if (false) { bar; } ->
+          //   if (false) { bar; } else if (foo) { foo; } else { bar; } -> if (foo) { foo; } else { bar; }
           //
           if (testTruthy === false) {
-            if (t.isBlockStatement(alternate) && alternate.body.length) {
+            if (alternate && (!t.isBlockStatement(alternate) || alternate.body.length)) {
               path.replaceWith(alternate);
             } else {
               path.remove();
